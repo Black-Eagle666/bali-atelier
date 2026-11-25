@@ -32,6 +32,7 @@
 <script>document.documentElement.classList.add("js");</script>
 <link rel="preconnect" href="https://res.cloudinary.com">
 <link rel="preconnect" href="https://images.unsplash.com">
+<link rel="preconnect" href="https://djxiniuxqnhmldcrviab.supabase.co" crossorigin>
 <link rel="preload" as="image" fetchpriority="high" imagesrcset="https://res.cloudinary.com/htcvr6as/video/upload/so_0,w_640,q_auto,f_auto/v1785781114/Drone_shot_above_jungle_villa_202608032116_ctfmx7.jpg 640w, https://res.cloudinary.com/htcvr6as/video/upload/so_0,w_960,q_auto,f_auto/v1785781114/Drone_shot_above_jungle_villa_202608032116_ctfmx7.jpg 960w, https://res.cloudinary.com/htcvr6as/video/upload/so_0,w_1440,q_auto,f_auto/v1785781114/Drone_shot_above_jungle_villa_202608032116_ctfmx7.jpg 1440w, https://res.cloudinary.com/htcvr6as/video/upload/so_0,w_1920,q_auto,f_auto/v1785781114/Drone_shot_above_jungle_villa_202608032116_ctfmx7.jpg 1920w" imagesizes="100vw">
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;1,400&amp;family=Manrope:wght@300;400;500;600&amp;family=Marck+Script&amp;display=swap" onload="this.onload=null;this.rel='stylesheet'">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;1,400&amp;family=Manrope:wght@300;400;500;600&amp;family=Marck+Script&amp;display=swap"></noscript>
@@ -551,6 +552,7 @@
   .prop-photo .tag,.prop-photo .roi{z-index:1;}
   .roi-photo{background:var(--forest);}
   .roi-layout > *{min-width:0;}
+  .prop-empty{grid-column:1 / -1;text-align:center;color:var(--muted);font-style:italic;font-size:14px;font-weight:300;padding:30px 0;}
   a,button{-webkit-tap-highlight-color:transparent;}
   .pop-box,.menu-inner{overscroll-behavior:contain;-webkit-overflow-scrolling:touch;}
   .pop-box{max-height:calc(100dvh - 48px);}
@@ -808,7 +810,7 @@
 </div>
 
 <!-- ======= WHY BALI ======= -->
-<section class="why" id="why">
+<section class="why" id="why" data-track="Чому Балі">
   <div class="wrap">
     <div class="head reveal">
       <div class="rule"></div>
@@ -875,7 +877,7 @@
 </section>
 
 <!-- ======= COLLECTION ======= -->
-<section class="collection" id="collection">
+<section class="collection" id="collection" data-track="Колекція">
   <div class="wrap">
     <div class="head reveal">
       <div class="rule"></div>
@@ -968,7 +970,7 @@
 </div>
 
 <!-- ======= ROI ======= -->
-<section class="roi">
+<section class="roi" data-track="Дохідність">
   <div class="wrap">
     <div class="ghost">ROI</div>
     <div class="roi-layout">
@@ -1007,7 +1009,7 @@
 </section>
 
 <!-- ======= PROCESS ======= -->
-<section class="process" id="process">
+<section class="process" id="process" data-track="Як це працює">
   <div class="wrap">
     <div class="head reveal">
       <div class="rule"></div>
@@ -1025,7 +1027,7 @@
 </section>
 
 <!-- ======= ABOUT ======= -->
-<section class="about" id="about">
+<section class="about" id="about" data-track="Про агента">
   <div class="wrap">
     <div class="about-photo reveal">
       <picture>
@@ -1048,7 +1050,7 @@
 </section>
 
 <!-- ======= TESTIMONIALS ======= -->
-<section class="testi">
+<section class="testi" data-track="Відгуки">
   <img class="bg-img" alt="" loading="lazy" decoding="async"
              src="https://images.unsplash.com/photo-1720161263981-84281892ee4b?ixlib=rb-4.1.0&amp;auto=format&amp;fit=crop&amp;w=1200&amp;q=50"
              srcset="https://images.unsplash.com/photo-1720161263981-84281892ee4b?ixlib=rb-4.1.0&amp;auto=format&amp;fit=crop&amp;w=640&amp;q=50 640w, https://images.unsplash.com/photo-1720161263981-84281892ee4b?ixlib=rb-4.1.0&amp;auto=format&amp;fit=crop&amp;w=1200&amp;q=50 1200w, https://images.unsplash.com/photo-1720161263981-84281892ee4b?ixlib=rb-4.1.0&amp;auto=format&amp;fit=crop&amp;w=1600&amp;q=50 1600w"
@@ -1076,7 +1078,7 @@
 </section>
 
 <!-- ======= FINAL CTA ======= -->
-<section class="final" id="cta">
+<section class="final" id="cta" data-track="Форма заявки">
   <div class="wrap">
     <div class="final-grid reveal">
       <div>
@@ -1277,6 +1279,70 @@
   function clamp01(v){ return Math.max(0, Math.min(1, v)); }
   function ease(k){ return k < .5 ? 2*k*k : 1 - Math.pow(-2*k + 2, 2)/2; }
 
+  /* ============================================================
+     БАЗА: позиції колекції та статистика відвідувань (Supabase).
+     Ключ нижче — публічний, він лише для читання позицій і запису подій.
+  ============================================================ */
+  var SB_URL = "https://djxiniuxqnhmldcrviab.supabase.co",
+      SB_KEY = "sb_publishable_DE-ezavcPV-JGMVDCfxmvQ_94Zwu9YZ";
+  function newVisitorId(){ return "v" + Math.random().toString(36).slice(2, 12) + Date.now().toString(36); }
+  /* постійний номер відвідувача зберігаємо лише після згоди на cookie;
+     без згоди — разовий номер у памʼяті, на пристрої нічого не лишається */
+  var visitorId = (function(){
+    var id = null;
+    try{
+      if(localStorage.getItem("ba-cookie") === "all"){
+        id = localStorage.getItem("ba-vid");
+        if(!id){ id = newVisitorId(); localStorage.setItem("ba-vid", id); }
+      }
+    }catch(err){}
+    return id || newVisitorId();
+  })();
+  var NO_TRACK = /^(localhost|127\.0\.0\.1)$/.test(location.hostname) || !!navigator.webdriver ||
+    /bot|crawl|spider|lighthouse|headless/i.test(navigator.userAgent) ||
+    (function(){ try{ return localStorage.getItem("ba-admin") === "1"; }catch(err){ return false; } })();
+  var DEVICE = innerWidth < 720 ? "mobile" : (innerWidth < 1081 && TOUCH ? "tablet" : "desktop");
+  var sentOnce = {};
+  function track(kind, target, repeat){
+    if(NO_TRACK || !window.fetch) return;
+    var key = kind + "|" + (target || "");
+    if(!repeat){ if(sentOnce[key]) return; sentOnce[key] = 1; }
+    var ref = "";
+    if(kind === "visit"){
+      try{ var host = document.referrer ? new URL(document.referrer).host : ""; if(host && host !== location.host) ref = host; }catch(err){}
+    }
+    try{
+      fetch(SB_URL + "/rest/v1/rpc/track", {
+        method:"POST", keepalive:true,
+        headers:{"apikey":SB_KEY, "Content-Type":"application/json"},
+        body:JSON.stringify({p_kind:kind, p_target:target || "", p_visitor:visitorId, p_device:DEVICE, p_referrer:ref})
+      }).catch(function(){});
+    }catch(err){}
+  }
+  track("visit");
+
+  /* розділ вважаємо переглянутим, коли він проходить через середину екрана */
+  var propIO = null;
+  if("IntersectionObserver" in window){
+    var secIO = new IntersectionObserver(function(es){
+      es.forEach(function(e){
+        if(!e.isIntersecting) return;
+        track("section", e.target.getAttribute("data-track"));
+        secIO.unobserve(e.target);
+      });
+    }, {rootMargin:"-45% 0px -45% 0px"});
+    document.querySelectorAll("[data-track]").forEach(function(el){ secIO.observe(el); });
+
+    /* позиція переглянута, коли картку видно більш ніж наполовину */
+    propIO = new IntersectionObserver(function(es){
+      es.forEach(function(e){
+        if(!e.isIntersecting) return;
+        track("property_view", e.target.getAttribute("data-id"));
+        propIO.unobserve(e.target);
+      });
+    }, {threshold:.55});
+  }
+
   /* ---------- шапка ---------- */
   var header = document.getElementById("siteHeader");
   addEventListener("scroll", function(){ header.classList.toggle("scrolled", scrollY > 40); }, {passive:true});
@@ -1354,6 +1420,78 @@
   } else {
     document.querySelectorAll(".w, .wipe, .reveal, .label").forEach(function(el){ el.classList.add("in"); });
   }
+
+  /* ---------- позиції колекції з бази (керуються з кабінету) ---------- */
+  function el(tag, cls, text){
+    var node = document.createElement(tag);
+    if(cls) node.className = cls;
+    if(text) node.textContent = text;
+    return node;
+  }
+  function buildProp(p){
+    var card = el("article", "prop reveal");
+    card.setAttribute("data-id", p.id);
+
+    var photo = el("div", "prop-photo wipe");
+    if(p.photo_url){
+      var img = el("img", "bg-img");
+      img.alt = p.title || ""; img.loading = "lazy"; img.decoding = "async";
+      if(/^https:\/\/images\.unsplash\.com\//.test(p.photo_url) && /[?&]w=\d+/.test(p.photo_url)){
+        img.srcset = [480, 800, 1100].map(function(w){ return p.photo_url.replace(/([?&]w=)\d+/, "$1" + w) + " " + w + "w"; }).join(", ");
+        img.sizes = "(max-width:1080px) 100vw, 33vw";
+      }
+      img.src = p.photo_url;
+      photo.appendChild(img);
+    }
+    if(p.tag) photo.appendChild(el("span", "tag", p.tag));
+    if(p.roi) photo.appendChild(el("span", "roi", p.roi));
+    card.appendChild(photo);
+
+    var body = el("div", "prop-body"), top = el("div", "prop-top");
+    top.appendChild(el("h3", "display", p.title));
+    if(p.price) top.appendChild(el("span", "prop-price", p.price));
+    body.appendChild(top);
+    if(p.location) body.appendChild(el("div", "prop-loc", p.location));
+    if(p.specs && p.specs.length){
+      var specs = el("div", "prop-specs");
+      p.specs.forEach(function(t){ if(t) specs.appendChild(el("span", "", t)); });
+      body.appendChild(specs);
+    }
+    if(p.description) body.appendChild(el("p", "", p.description));
+    var arrow = el("a", "prop-arrow", "→");
+    arrow.href = "#cta";
+    arrow.setAttribute("aria-label", "Дізнатися більше: " + p.title);
+    body.appendChild(arrow);
+    card.appendChild(body);
+    return card;
+  }
+  (function(){
+    var grid = document.querySelector(".prop-grid");
+    if(!grid || !window.fetch) return;
+    fetch(SB_URL + "/rest/v1/properties?select=id,title,location,price,roi,tag,specs,description,photo_url" +
+          "&published=eq.true&order=sort_order.asc,created_at.asc", {headers:{"apikey":SB_KEY}})
+      .then(function(r){ if(!r.ok) throw new Error("properties " + r.status); return r.json(); })
+      .then(function(list){
+        if(!Array.isArray(list)) return;
+        grid.textContent = "";
+        if(!list.length){
+          grid.appendChild(el("p", "prop-empty", "Нова добірка готується — залиште заявку, і я надішлю її першою."));
+          return;
+        }
+        list.forEach(function(p, i){
+          var card = buildProp(p), wipe = card.querySelector(".wipe");
+          card.style.transitionDelay = (i % 4) * 110 + "ms";
+          grid.appendChild(card);
+          if(typeof io !== "undefined" && io){ io.observe(card); io.observe(wipe); }
+          else { card.classList.add("in"); wipe.classList.add("in"); }
+          if(propIO) propIO.observe(card);
+        });
+      })
+      .catch(function(err){
+        /* база недоступна — лишаються позиції, вписані в сторінку */
+        if(window.console) console.warn("Bali Atelier: позиції з бази не завантажились", err);
+      });
+  })();
 
   /* страховка: контент не лишається схованим */
   setTimeout(function(){
@@ -1589,7 +1727,10 @@
     /* cookie: показуємо, поки вибір не зроблено */
     var bar = document.getElementById("cookie");
     function remember(v){
-      try{ localStorage.setItem("ba-cookie", v); }catch(err){}
+      try{
+        localStorage.setItem("ba-cookie", v);
+        if(v === "all") localStorage.setItem("ba-vid", visitorId);
+      }catch(err){}
       bar.classList.remove("show");
     }
     var saved = null;
@@ -1618,6 +1759,7 @@
       pop.classList.add("open");
       document.body.classList.add("pop-open");
       shown = true;
+      track("form_open");
       /* на телефоні поле не фокусуємо: клавіатура не має вискакувати сама й закривати вікно */
       if(!TOUCH) setTimeout(function(){
         var f = box.querySelector("input");
@@ -1632,7 +1774,7 @@
 
     /* кнопки, які відкривають попап замість переходу до секції */
     var triggers = [].slice.call(document.querySelectorAll(
-      '.head-cta, .hero .cta-row .btn-fill, .prop-arrow, .m-foot a, .m-link[href="#cta"]'
+      '.head-cta, .hero .cta-row .btn-fill, .m-foot a, .m-link[href="#cta"]'
     ));
     triggers.forEach(function(el){
       el.addEventListener("click", function(e){
@@ -1642,6 +1784,16 @@
           setTimeout(function(){ openPop(el); }, 350);
         } else openPop(el);
       });
+    });
+
+    /* стрілки на картках: картки приходять із бази пізніше, тому слухаємо весь документ */
+    document.addEventListener("click", function(e){
+      var arrow = e.target.closest ? e.target.closest(".prop-arrow") : null;
+      if(!arrow) return;
+      e.preventDefault();
+      var card = arrow.closest(".prop");
+      if(card && card.getAttribute("data-id")) track("property_click", card.getAttribute("data-id"), true);
+      openPop(arrow);
     });
 
     pop.querySelectorAll("[data-pop-close]").forEach(function(el){
@@ -1662,6 +1814,7 @@
 
     if(form) form.addEventListener("submit", function(e){
       e.preventDefault();
+      track("form_submit", "", true);
       form.style.display = "none";
       done.classList.add("on");
       setTimeout(closePop, 2600);
